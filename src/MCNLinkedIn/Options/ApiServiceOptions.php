@@ -66,20 +66,6 @@ class ApiServiceOptions extends AbstractOptions
     protected $secret;
 
     /**
-     * OAuth token
-     *
-     * @var string
-     */
-    protected $oauthToken;
-
-    /**
-     * OAuth secret
-     *
-     * @var string
-     */
-    protected $oauthSecret;
-
-    /**
      * @var string
      */
     protected $authenticationEndPoint;
@@ -88,6 +74,51 @@ class ApiServiceOptions extends AbstractOptions
      * @var array
      */
     protected $scope = array();
+
+    /**
+     * @var string
+     */
+    protected $accessToken;
+
+    /**
+     * @var array
+     */
+    protected $profileFields = array(
+        'id', 'first-name', 'last-name',
+        'headline', 'picture-url', 'email-address', 'primary-twitter-account', 'main-address'
+    );
+
+    /**
+     * @param $profileFields
+     */
+    public function setProfileFields($profileFields)
+    {
+        $this->profileFields = $profileFields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProfileFields()
+    {
+        return $this->profileFields;
+    }
+
+    /**
+     * @param string $accessToken
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
 
     /**
      * @param array $scope
@@ -146,38 +177,6 @@ class ApiServiceOptions extends AbstractOptions
     public function getKey()
     {
         return $this->key;
-    }
-
-    /**
-     * @param $oauth_secret
-     */
-    public function setOauthSecret($oauth_secret)
-    {
-        $this->oauthSecret = $oauth_secret;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getOauthSecret()
-    {
-        return $this->oauthSecret;
-    }
-
-    /**
-     * @param $oauth_token
-     */
-    public function setOauthToken($oauth_token)
-    {
-        $this->oauthToken = $oauth_token;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getOauthToken()
-    {
-        return $this->oauthToken;
     }
 
     /**

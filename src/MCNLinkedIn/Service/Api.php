@@ -51,8 +51,10 @@ use Zend\Http\Client as HttpClient;
  */
 class Api
 {
-    const URI_OAUTH2_AUTH  = 'https://www.linkedin.com/uas/oauth2/authorization?';
-    const URI_OAUTH2_TOKEN = 'https://www.linkedin.com/uas/oauth2/accessToken?';
+    const URI_OAUTH2_AUTH  = 'https://www.linkedin.com/uas/oauth2/authorization';
+    const URI_OAUTH2_TOKEN = 'https://www.linkedin.com/uas/oauth2/accessToken';
+
+    const URI_PROFILE = 'https://api.linkedin.com/v1/people/~';
 
     const SCOPE_EMAIL = 'r_emailaddress';
     const SCOPE_BASIC_PROFILE = 'r_basicprofile';
@@ -83,6 +85,14 @@ class Api
     }
 
     /**
+     * @return ApiServiceOptions
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
      * @see \MCNLinkedIn\Authentication\Adapter\LinkedIn
      *
      * @return string
@@ -91,7 +101,7 @@ class Api
     {
         $scope = implode(' ', array_unique($this->options->getScope()));
 
-        return static::URI_OAUTH2_AUTH . http_build_query(
+        return static::URI_OAUTH2_AUTH . '?' . http_build_query(
             array(
                 'response_type' => 'code',
                 'client_id'     => $this->options->getKey(),
@@ -103,13 +113,19 @@ class Api
     }
 
     /**
+     * Convert an access code to a token
+     *
      * @param string $code
      *
-     * @return array
+     * @throws Exception\ApiException
+     * @throws Exception\InvalidResponseException
+     *
+     * @return \stdClass
      */
     public function requestAccessToken($code)
     {
-        $uri = static::URI_OAUTH2_TOKEN . http_build_query(
+        $this->client->setUri(static::URI_OAUTH2_TOKEN);
+        $this->client->setParameterGet(
             array(
                 'code'          => $code,
                 'grant_type'    => 'authorization_code',
@@ -119,12 +135,50 @@ class Api
             )
         );
 
-        $this->client->setUri($uri);
         $response = $this->client->send();
 
         if ($response->getStatusCode() == 200) {
 
             return json_decode($response->getBody());
         }
+
+        $this->fail($response);
+    }
+
+    /**
+     * @param $response
+     *
+     * @throws Exception\ApiException
+     * @throws Exception\InvalidResponseException
+     */
+    private function fail($response)
+    {
+        $data = json_decode($response->getBody());
+
+        if (!$data) {
+
+            throw new Exception\ApiException($data['error_description'], $data['error']);
+        } else {
+
+            throw new Exception\InvalidResponseException($response->getBody());
+        }
+    }
+
+    /**
+     * @todo use Zend\Http\Client when linkedIn fixes their dam api
+     *
+     * @return \stdClass
+     */
+    public function getProfile()
+    {
+        $uri = sprintf(
+            '%s:(%s)?format=json&oauth2_access_token=%s',
+            static::URI_PROFILE,
+            implode(',', $this->options->getProfileFields()),
+            $this->options->getAccessToken()
+        );
+
+        $response = file_get_contents($uri);
+        return json_decode($response);
     }
 }

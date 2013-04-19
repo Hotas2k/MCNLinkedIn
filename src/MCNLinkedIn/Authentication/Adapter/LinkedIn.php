@@ -43,6 +43,7 @@ namespace MCNLinkedIn\Authentication\Adapter;
 
 use DateTime;
 use MCNLinkedIn\Authentication\Result;
+use MCNLinkedIn\Service\Exception\ExceptionInterface;
 use MCNStdlib\Interfaces\UserServiceInterface;
 use MCNUser\Authentication\Adapter\AbstractAdapter;
 use Zend\Http\Request as HttpRequest;
@@ -52,6 +53,8 @@ use Zend\Http\PhpEnvironment\Response as HttpResponse;
 /**
  * Class LinkedIn
  * @package MCNLinkedIn\Authentication\Plugin
+ *
+ * @property \MCNLinkedIn\Options\Authentication\Adapter\LinkedIn options
  */
 class LinkedIn extends AbstractAdapter
 {
@@ -93,19 +96,37 @@ class LinkedIn extends AbstractAdapter
                 return Result::create($code, null, $request->getQuery('error_description'));
             }
 
-            $result = $this->apiService->requestAccessToken($code);
+            try {
 
-            $this->apiService->setAccessToken($result['access_token']);
-            $profile = $this->apiService->getProfile();
+                // Step 2, convert the access code into a token
+                $result  = $this->apiService->requestAccessToken($code);
 
-            $user = $service->getOneBy('linkedin_id', $profile['id']);
+                // Set the access token on the api
+                $this->apiService->getOptions()->setAccessToken($result->access_token);
 
-            if (! $user) {
+                // Get the current profile
+                $profile = $this->apiService->getProfile();
 
-                return Result::create(Result::FAILURE_IDENTITY_NOT_FOUND, null, Result::MSG_IDENTITY_NOT_FOUND);
+                // match against DB
+                $user = $service->getOneBy($this->options->getEntityIdProperty(), $profile->id);
+
+                if (! $user) {
+
+                    return Result::create(Result::FAILURE_IDENTITY_NOT_FOUND, null, Result::MSG_IDENTITY_NOT_FOUND);
+                }
+
+                // Update user access token & token expires at
+                $expiresAt = DateTime::createFromFormat('U', time() + $result->expires_in);
+                $user->{'set' . ucfirst($this->options->getEntityTokenProperty())}($result->access_token);
+                $user->{'set' . ucfirst($this->options->getEntityTokenExpiresAtProperty())}($expiresAt);
+                $service->save($user);
+
+                return Result::create(Result::SUCCESS, $user);
+
+            } catch (ExceptionInterface $e) {
+
+                return Result::create(Result::FAILURE_UNCATEGORIZED, null, $e->getMessage());
             }
-
-            return Result::create(Result::SUCCESS, $user);
         }
     }
 }

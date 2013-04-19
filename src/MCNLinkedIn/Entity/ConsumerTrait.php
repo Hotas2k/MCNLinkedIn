@@ -39,112 +39,82 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNLinkedIn\Options\Authentication\Adapter;
+namespace MCNLinkedIn\Entity;
 
-use MCNUser\Options\Authentication\Adapter\AbstractAdapterOptions;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class LinkedIn
- * @package MCNLinkedIn\Options\Authentication\Adapter
+ * Class ConsumerTrait
+ * @package MCNLinkedIn\Service\Api
  */
-class LinkedIn extends AbstractAdapterOptions
+trait ConsumerTrait
 {
     /**
-     * LinkedIn ID property on the user entity
-     *
      * @var string
+     *
+     * @ORM\Column(nullable=true)
      */
-    protected $entityIdProperty = 'linkedInId';
+    protected $linkedInId;
 
     /**
-     * LinkedIn accessToken on the user entity
-     *
      * @var string
-     */
-    protected $entityTokenProperty = 'linkedInAccessToken';
-
-    /**
-     * LinkedIn tokenExpiration date on the user entity
      *
-     * @var string
+     * @ORM\Column(nullable=true)
      */
-    protected $entityTokenExpiresAtProperty = 'linkedInTokenExpiresAt';
+    protected $linkedInAccessToken;
 
     /**
-     * Class name of representing adapter
+     * @var \DateTime
      *
-     * @return string
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    public function getClassName()
-    {
-        return 'MCNLinkedIn\Authentication\Adapter\LinkedIn';
-    }
+    protected $linkedInTokenExpiresAt;
 
     /**
-     * Adapter alias
-     *
-     * @return string
+     * @param string $linkedInAccessToken
      */
-    public function getAdapterManagerAlias()
+    public function setLinkedInAccessToken($linkedInAccessToken)
     {
-        return 'linkedin';
-    }
-
-    /**
-     * SL alias
-     *
-     * @return string
-     */
-    public function getServiceManagerAlias()
-    {
-        return 'mcn.authentication.adapter.linkedin';
-    }
-
-    /**
-     * @param string $entityIdProperty
-     */
-    public function setEntityIdProperty($entityIdProperty)
-    {
-        $this->entityIdProperty = $entityIdProperty;
+        $this->linkedInAccessToken = $linkedInAccessToken;
     }
 
     /**
      * @return string
      */
-    public function getEntityIdProperty()
+    public function getLinkedInAccessToken()
     {
-        return $this->entityIdProperty;
+        return $this->linkedInAccessToken;
     }
 
     /**
-     * @param string $entityTokenExpiresAtProperty
+     * @param string $linkedInId
      */
-    public function setEntityTokenExpiresAtProperty($entityTokenExpiresAtProperty)
+    public function setLinkedInId($linkedInId)
     {
-        $this->entityTokenExpiresAtProperty = $entityTokenExpiresAtProperty;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEntityTokenExpiresAtProperty()
-    {
-        return $this->entityTokenExpiresAtProperty;
-    }
-
-    /**
-     * @param string $entityTokenProperty
-     */
-    public function setEntityTokenProperty($entityTokenProperty)
-    {
-        $this->entityTokenProperty = $entityTokenProperty;
+        $this->linkedInId = $linkedInId;
     }
 
     /**
      * @return string
      */
-    public function getEntityTokenProperty()
+    public function getLinkedInId()
     {
-        return $this->entityTokenProperty;
+        return $this->linkedInId;
+    }
+
+    /**
+     * @param \DateTime $linkedInTokenExpiresAt
+     */
+    public function setLinkedInTokenExpiresAt($linkedInTokenExpiresAt)
+    {
+        $this->linkedInTokenExpiresAt = $linkedInTokenExpiresAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLinkedInTokenExpiresAt()
+    {
+        return $this->linkedInTokenExpiresAt;
     }
 }
