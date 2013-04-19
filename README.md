@@ -1,5 +1,6 @@
 MCNLinkedIn (In development)
 ============================
+[![Build Status](https://travis-ci.org/macnibblet/MCNLinkedIn.png?branch=master)](https://travis-ci.org/macnibblet/MCNLinkedIn)
 
 Authentication
 --------------
