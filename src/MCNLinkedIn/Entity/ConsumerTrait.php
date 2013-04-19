@@ -41,11 +41,13 @@
 
 namespace MCNLinkedIn\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class ConsumerTrait
  * @package MCNLinkedIn\Service\Api
+ * @codeCoverageIgnore
  */
 trait ConsumerTrait
 {
@@ -105,7 +107,7 @@ trait ConsumerTrait
     /**
      * @param \DateTime $linkedInTokenExpiresAt
      */
-    public function setLinkedInTokenExpiresAt($linkedInTokenExpiresAt)
+    public function setLinkedInTokenExpiresAt(DateTime $linkedInTokenExpiresAt)
     {
         $this->linkedInTokenExpiresAt = $linkedInTokenExpiresAt;
     }
