@@ -56,13 +56,13 @@ class Api
 
     const URI_PROFILE = 'https://api.linkedin.com/v1/people/~';
 
-    const SCOPE_EMAIL = 'r_emailaddress';
-    const SCOPE_BASIC_PROFILE = 'r_basicprofile';
-    const SCOPE_FULL_PROFILE = 'r_fullprofile';
-    const SCOPE_NETWORK = 'r_network';
-    const SCOPE_CONTACT_INFO = 'r_contactinfo';
-    const SCOPE_NETWORK_UPDATES = 'rw_nus';
-    const SCOPE_GROUP_DISCUSSIONS = 'rw_groups';
+    const SCOPE_EMAIL                = 'r_emailaddress';
+    const SCOPE_BASIC_PROFILE        = 'r_basicprofile';
+    const SCOPE_FULL_PROFILE         = 'r_fullprofile';
+    const SCOPE_NETWORK              = 'r_network';
+    const SCOPE_CONTACT_INFO         = 'r_contactinfo';
+    const SCOPE_NETWORK_UPDATES      = 'rw_nus';
+    const SCOPE_GROUP_DISCUSSIONS    = 'rw_groups';
     const SCOPE_INVITES_AND_MESSAGES = 'w_message';
 
     /**
@@ -78,10 +78,10 @@ class Api
     /**
      * @param ApiServiceOptions $options
      */
-    public function __construct(ApiServiceOptions $options)
+    public function __construct(ApiServiceOptions $options = null)
     {
         $this->client  = new HttpClient(null, array('sslverifypeer' => false));
-        $this->options = $options;
+        $this->options = ($options === null) ? new ApiServiceOptions : $options;
     }
 
     /**

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<phpunit
+        bootstrap="./test/Bootstrap.php"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        verbose="true"
+        stopOnFailure="false"
+        processIsolation="false"
+        backupGlobals="false"
+        syntaxCheck="true"
+        >
+    <testsuite name="MCNLinkedIn test">
+        <directory>./test</directory>
+    </testsuite>
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+    <logging>
+        <log
+                type="coverage-html"
+                target="build/coverage"
+                charset="UTF-8"
+                yui="true"
+                highlight="true"
+                lowUpperBound="35"
+                highLowerBound="70"
+                />
+        <log type="coverage-clover" target="./clover.xml"/>
+    </logging>
+</phpunit>

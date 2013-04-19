@@ -1,0 +1,39 @@
+{
+    "name": "mcn/linkedin",
+    "authors": [
+        {
+            "name": "Antoine Hedgecock",
+            "email": "antoine.hedgecock@gmail.com"
+        },
+        {
+            "name": "Jonas Eriksson",
+            "email": "jonas@pmg.se"
+        }
+    ],
+
+    "minimum-stability": "dev",
+    "require": {
+        "mcn/stdlib": "dev-master",
+        "zendframework/zend-http": "2.*",
+        "zendframework/zend-stdlib": "2.*",
+        "zendframework/zend-servicemanager": "2.*"
+    },
+
+    "require-dev": {
+        "mcn/user": "dev-master"
+    },
+
+    "suggests": {
+        "doctrine/orm": "If you wish to use the ConsumerTrait",
+        "mcn/user": "If you wish to the authentication adapter"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "MCNLinkedIn": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
+    }
+}
