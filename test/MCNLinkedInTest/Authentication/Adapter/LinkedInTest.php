@@ -39,7 +39,7 @@
  * @license     http://www.opensource.org/licenses/bsd-license.php  BSD License
  */
 
-namespace MCNLinkedTest\Authentication\Adapter;
+namespace MCNLinkedInTest\Authentication\Adapter;
 
 use DateTime;
 use MCNLinkedIn\Authentication\Adapter\LinkedIn as Adapter;

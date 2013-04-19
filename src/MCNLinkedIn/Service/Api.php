@@ -42,6 +42,7 @@
 namespace MCNLinkedIn\Service;
 
 use MCNLinkedIn\Options\ApiServiceOptions;
+use Zend\Http\Response;
 use Zend\Math\Rand;
 use Zend\Http\Client as HttpClient;
 
@@ -80,8 +81,28 @@ class Api
      */
     public function __construct(ApiServiceOptions $options = null)
     {
-        $this->client  = new HttpClient(null, array('sslverifypeer' => false));
+
         $this->options = ($options === null) ? new ApiServiceOptions : $options;
+    }
+
+    /**
+     * @return HttpClient
+     */
+    public function getHttpClient()
+    {
+        if ($this->client === null) {
+            $this->client = new HttpClient(null, array('sslverifypeer' => false));
+        }
+
+        return $this->client;
+    }
+
+    /**
+     * @param HttpClient $client
+     */
+    public function setHttpClient(HttpClient $client)
+    {
+        $this->client = $client;
     }
 
     /**
@@ -97,8 +118,9 @@ class Api
      *
      * @return string
      */
-    public function getOAuth2Uri()
+    public function getOAuth2Uri($csrf = null)
     {
+        $csrf  = ($csrf === null) ? Rand::getString(15) : $csrf;
         $scope = implode(' ', array_unique($this->options->getScope()));
 
         return static::URI_OAUTH2_AUTH . '?' . http_build_query(
@@ -106,7 +128,7 @@ class Api
                 'response_type' => 'code',
                 'client_id'     => $this->options->getKey(),
                 'scope'         => $scope,
-                'state'         => Rand::getString(15),
+                'state'         => $csrf,
                 'redirect_uri'  => $this->options->getAuthenticationEndPoint()
             )
         );
@@ -124,8 +146,10 @@ class Api
      */
     public function requestAccessToken($code)
     {
-        $this->client->setUri(static::URI_OAUTH2_TOKEN);
-        $this->client->setParameterGet(
+        $client = $this->getHttpClient();
+
+        $client->setUri(static::URI_OAUTH2_TOKEN);
+        $client->setParameterGet(
             array(
                 'code'          => $code,
                 'grant_type'    => 'authorization_code',
@@ -135,7 +159,7 @@ class Api
             )
         );
 
-        $response = $this->client->send();
+        $response = $client->send();
 
         if ($response->getStatusCode() == 200) {
 
@@ -151,7 +175,7 @@ class Api
      * @throws Exception\ApiException
      * @throws Exception\InvalidResponseException
      */
-    private function fail($response)
+    private function fail(Response $response)
     {
         $data = json_decode($response->getBody());
 
@@ -166,6 +190,8 @@ class Api
 
     /**
      * @todo use Zend\Http\Client when linkedIn fixes their dam api
+     *
+     * @codeCoverageIgnore
      *
      * @return \stdClass
      */
