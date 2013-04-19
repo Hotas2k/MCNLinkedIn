@@ -43,6 +43,7 @@ namespace MCNLinkedInTest\Service;
 
 use MCNLinkedIn\Options\ApiServiceOptions;
 use MCNLinkedIn\Service\Api;
+use Zend\Http\Response;
 
 /**
  * Class ApiTest
@@ -83,5 +84,42 @@ class ApiTest extends \PHPUnit_Framework_TestCase
                'redirect_uri=http%3A%2F%2Fdomain.tld%2F';
 
         $this->assertEquals($uri, $result);
+    }
+
+    public function testRequestAccessToken_Success()
+    {
+        $data = new \stdClass();
+        $data->access_token = 'token';
+        $data->expires_in = 3600;
+
+        $response = new Response();
+        $response->setStatusCode(200);
+        $response->setContent(json_encode($data));
+
+        $this->client
+            ->expects($this->once())
+            ->method('setUri')
+            ->with(Api::URI_OAUTH2_TOKEN);
+
+        $this->client
+            ->expects($this->once())
+            ->method('setParameterGet')
+            ->with(
+                array(
+                    'code'          => 'code',
+                    'grant_type'    => 'authorization_code',
+                    'client_id'     => $this->options->getKey(),
+                    'client_secret' => $this->options->getSecret(),
+                    'redirect_uri'  => $this->options->getAuthenticationEndPoint()
+                )
+            );
+
+        $this->client
+            ->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($response));
+
+        $result = $this->service->requestAccessToken('code');
+        $this->assertEquals($data, $result);
     }
 }
